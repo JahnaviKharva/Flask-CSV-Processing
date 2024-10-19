@@ -5,6 +5,7 @@ from controllers.auth_controller import auth_bp
 from config import DevelopmentConfig
 from controllers.error_handler import error_bp
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
