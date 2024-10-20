@@ -65,7 +65,7 @@ The following endpoints are available for testing on the deployed URL: web-produ
 1. User Authentication
 Signup
 
-URL: /signup
+URL: https://web-production-5d75.up.railway.app/signup
 Method: POST
 Body:
 {
@@ -75,7 +75,7 @@ Body:
 
 Login
 
-URL: /login
+URL: https://web-production-5d75.up.railway.app/login
 Method: POST
 Body:
 {
