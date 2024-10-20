@@ -130,7 +130,7 @@ Body:
 }
 
 7. Delete Purchase Detail
-URL: https://web-production-5d75.up.railway.app/delete_purchase_detail_data/<id>
+URL: https://web-production-5d75.up.railway.app/delete_purchase_detail_data/{id}
 Example: https://web-production-5d75.up.railway.app/delete_purchase_detail_data/1
 Method: DELETE
 Headers:
