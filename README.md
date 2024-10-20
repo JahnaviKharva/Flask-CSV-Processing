@@ -93,8 +93,7 @@ Headers:
 Authorization: Bearer <your_jwt_token>
 Description: Invalidates the user's JWT token.
 
-4.  Purchase Data
-Upload CSV
+4.  Upload CSV
 URL: https://web-production-5d75.up.railway.app/upload_csv
 Method: POST
 Body: form-data
