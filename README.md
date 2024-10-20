@@ -101,9 +101,10 @@ Body: form-data
 Key: file
 Value: [CSV file]
 Description: Uploads a CSV file
-the file must contain fields bill_date, bill_no, bill_total, medicine_name, quantity, mrp, item_total, expiry_date
-the file extension must be CSV (comma delimited)
-processes the data, and inserts it into the purchase and purchase_details tables.
+Uploads a CSV file containing the following fields: bill_date, bill_no, medicine_name, quantity, mrp, expiry_date.
+The file must have a .csv extension (comma delimited).
+It processes the data and inserts it into the purchase and purchase_details tables.
+The item_total and bill_total are automatically calculated based on mrp * quantity and the sum of item_total values, respectively.
 
 5. Fetch Purchase Data
 
