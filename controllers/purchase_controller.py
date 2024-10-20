@@ -42,37 +42,61 @@ def upload_csv():
         with open(filename, mode='r', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
 
-            # Validate required columns
+            # Define the required columns
             required_columns = {'bill_date', 'bill_no', 'medicine_name', 'quantity', 'mrp', 'expiry_date'}
-            csv_columns = set(reader.fieldnames)
 
-            if not required_columns.issubset(csv_columns):
-                missing_cols = required_columns - csv_columns
+            # Check if all required columns are present
+            csv_columns = set(reader.fieldnames)
+            missing_cols = required_columns - csv_columns
+
+            if missing_cols:
                 return jsonify({"error": f"Missing columns: {', '.join(missing_cols)}"}), 400
 
             conn = get_db_connection()
             cur = conn.cursor()
 
-            bill_total = 0  # Initialize bill total
+            # Initialize bill total
+            bill_total = 0  
 
             for row in reader:
+                # Ensure all fields are not empty
+                for field in required_columns:
+                    if not row.get(field):
+                        return jsonify({"error": f"Empty value in column: {field}"}), 400
+
                 # Convert bill_date from DD-MM-YYYY to a date object
-                bill_date = datetime.strptime(row['bill_date'], "%d-%m-%Y").date()
+                try:
+                    bill_date = datetime.strptime(row['bill_date'], "%d-%m-%Y").date()
+                except ValueError:
+                    return jsonify({"error": "Invalid date format for 'bill_date'. Expected DD-MM-YYYY"}), 400
 
                 # Calculate item_total
-                item_total = float(row['mrp']) * int(row['quantity'])
+                try:
+                    item_total = float(row['mrp']) * int(row['quantity'])
+                except ValueError:
+                    return jsonify({"error": "Invalid numerical value in 'mrp' or 'quantity'"}), 400
+
                 bill_total += item_total
 
                 # Insert into 'purchase' table
                 cur.execute(
-                    "INSERT INTO purchase (bill_date, bill_no, bill_total) VALUES (%s, %s, %s) ON CONFLICT (bill_no) DO UPDATE SET bill_total = %s RETURNING id",
+                    """
+                    INSERT INTO purchase (bill_date, bill_no, bill_total) 
+                    VALUES (%s, %s, %s) 
+                    ON CONFLICT (bill_no) 
+                    DO UPDATE SET bill_total = %s 
+                    RETURNING id
+                    """,
                     (bill_date, row['bill_no'], bill_total, bill_total)
                 )
                 purchase_id = cur.fetchone()[0]
 
                 # Insert into 'purchase_details' table
                 cur.execute(
-                    "INSERT INTO purchase_details (purchase_id, medicine_name, quantity, MRP, item_total, expiry_date) VALUES (%s, %s, %s, %s, %s, %s)",
+                    """
+                    INSERT INTO purchase_details (purchase_id, medicine_name, quantity, MRP, item_total, expiry_date) 
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
                     (purchase_id, row['medicine_name'], row['quantity'], row['mrp'], item_total, row['expiry_date'])
                 )
 
@@ -85,7 +109,6 @@ def upload_csv():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 # Update MRP Route
 @purchase_bp.route('/update_purchase_detail_data/<int:id>', methods=['PUT'])
