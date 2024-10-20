@@ -73,7 +73,7 @@ Body:
   "password": "testpassword"
 }
 
-Login
+2. Login
 
 URL: https://web-production-5d75.up.railway.app/login
 Method: POST
@@ -84,25 +84,55 @@ Body:
 }
 
 Returns a JWT token.
-2. Purchase Data
-Upload CSV
 
-URL: /upload_csv
+3. Logout
+URL: https://web-production-5d75.up.railway.app/logout
 Method: POST
-Form-data:
-Key: file, Value: [CSV file]
-Fetch Purchase Data
+Headers:
+Authorization: Bearer <your_jwt_token>
+Description: Invalidates the user's JWT token.
 
-URL: /get_purchase_data/{bill_no}
+4.  Purchase Data
+Upload CSV
+URL: https://web-production-5d75.up.railway.app/upload_csv
+Method: POST
+Body: form-data
+Key: file
+Value: [CSV file]
+Description: Uploads a CSV file
+the file must contain fields bill_date, bill_no, bill_total, medicine_name, quantity, mrp, item_total, expiry_date
+the file extension must be CSV (comma delimited)
+processes the data, and inserts it into the purchase and purchase_details tables.
+
+5. Fetch Purchase Data
+
+URL: https://web-production-5d75.up.railway.app/get_purchase_data/<bill_no>
 Method: GET
-Update Purchase Detail
 
-URL: /update_purchase_detail_data/{id}
+
+6. Update Purchase Detail
+
+URL: https://web-production-5d75.up.railway.app/update_purchase_detail_data/<id>
 Method: PUT
+Headers:
+Authorization: Bearer <your_jwt_token>
 Body:
 {
   "mrp": 60
 }
+
+7. Delete Purchase Detail
+URL: https://web-production-5d75.up.railway.app/delete_purchase_detail_data/<id>
+Example: https://web-production-5d75.up.railway.app/delete_purchase_detail_data/1
+Method: DELETE
+Headers:
+Authorization: Bearer <your_jwt_token>
+Description: Deletes the record with the specified ID from the purchase_details table.
+
+8. Create Purchase CSV
+URL: https://web-production-5d75.up.railway.app/create_purchase_csv
+Method: GET
+Description: Creates a CSV file from data in the purchase and purchase_details tables and stores it locally on the server.
 PostgreSQL Database Setup
 
 Using setup_database.py
