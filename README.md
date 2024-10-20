@@ -118,7 +118,7 @@ Method: GET
 
 6. Update Purchase Detail
 
-URL: https://web-production-5d75.up.railway.app/update_purchase_detail_data/<id>
+URL: https://web-production-5d75.up.railway.app/update_purchase_detail_data/{id}
 Method: PUT
 Headers:
 Authorization: Bearer <your_jwt_token>
