@@ -13,6 +13,7 @@ from models.database import get_db_connection
 from utils.validators import validate_required_fields, validate_date_format, validate_positive_integer, validate_mrp
 from flask_jwt_extended import create_access_token, jwt_required
 from werkzeug.utils import secure_filename
+from datetime import datetime
 
 
 
@@ -54,6 +55,9 @@ def upload_csv():
             bill_total = 0  # Initialize bill total
 
             for row in reader:
+                # Convert bill_date from DD-MM-YYYY to a date object
+                bill_date = datetime.strptime(row['bill_date'], "%d-%m-%Y").date()
+
                 # Calculate item_total
                 item_total = float(row['mrp']) * int(row['quantity'])
                 bill_total += item_total
@@ -61,7 +65,7 @@ def upload_csv():
                 # Insert into 'purchase' table
                 cur.execute(
                     "INSERT INTO purchase (bill_date, bill_no, bill_total) VALUES (%s, %s, %s) ON CONFLICT (bill_no) DO UPDATE SET bill_total = %s RETURNING id",
-                    (row['bill_date'], row['bill_no'], bill_total, bill_total)
+                    (bill_date, row['bill_no'], bill_total, bill_total)
                 )
                 purchase_id = cur.fetchone()[0]
 
