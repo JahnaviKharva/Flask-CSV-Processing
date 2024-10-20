@@ -24,7 +24,7 @@ This project is a Flask-based backend application designed to:
 3. **Postman** (For API testing)
 
 ### Local Installation
-
+### There is no need for clonning because i have a deployed urls, so, you can check them directly on postman
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/JahnaviKharva/Flask-CSV-Processing
@@ -41,7 +41,7 @@ pip install -r requirements.txt
 Set up the database:
 
 Run the following command to create tables in the database:
-python setup_database.py
+python setup_database.py #databse is already setup on the railway postgresql, so no need to run it. this is just for the understanding.
 
 Database Structure
 The database consists of two tables:
@@ -51,6 +51,8 @@ id: Unique identifier
 bill_date: Date of the purchase
 bill_no: Bill number
 bill_total: Total amount of the bill
+
+
 purchase_details
 id: Unique identifier
 purchase_id: Foreign key referencing the purchase table
