@@ -16,30 +16,68 @@ from utils.validators import validate_required_fields, validate_date_format, val
 purchase_bp = Blueprint('purchase_bp', __name__)
 
 @purchase_bp.route('/upload_csv', methods=['POST'])
+@jwt_required()
 def upload_csv():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
     file = request.files['file']
+
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
-    csv_data = csv.DictReader(file.read().decode('utf-8-sig').splitlines())
+    if not file.filename.endswith('.csv'):
+        return jsonify({"error": "Only CSV files are allowed"}), 400
 
-    # Standardize headers
-    headers = [header.strip().lstrip('\ufeff') for header in csv_data.fieldnames]
-    csv_data.fieldnames = headers
+    try:
+        filename = secure_filename(file.filename)
+        file.save(filename)
 
-    # Required fields for each row in the CSV
-    required_fields = ['bill_date', 'bill_no', 'bill_total', 'medicine_name', 'quantity', 'mrp', 'item_total', 'expiry_date']
+        # Process CSV file
+        with open(filename, mode='r', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
 
-    for row in csv_data:
-        # Validate required fields only
-        is_valid, message = validate_required_fields(row, required_fields)
-        if not is_valid:
-            return jsonify({"error": message}), 400
+            # Validate required columns
+            required_columns = {'bill_date', 'bill_no', 'medicine_name', 'quantity', 'mrp', 'expiry_date'}
+            csv_columns = set(reader.fieldnames)
 
-    return jsonify({"message": "CSV data is inserted"}), 200
+            if not required_columns.issubset(csv_columns):
+                missing_cols = required_columns - csv_columns
+                return jsonify({"error": f"Missing columns: {', '.join(missing_cols)}"}), 400
+
+            conn = get_db_connection()
+            cur = conn.cursor()
+
+            bill_total = 0  # Initialize bill total
+
+            for row in reader:
+                # Calculate item_total
+                item_total = float(row['mrp']) * int(row['quantity'])
+                bill_total += item_total
+
+                # Insert into 'purchase' table
+                cur.execute(
+                    "INSERT INTO purchase (bill_date, bill_no, bill_total) VALUES (%s, %s, %s) ON CONFLICT (bill_no) DO UPDATE SET bill_total = %s RETURNING id",
+                    (row['bill_date'], row['bill_no'], bill_total, bill_total)
+                )
+                purchase_id = cur.fetchone()[0]
+
+                # Insert into 'purchase_details' table
+                cur.execute(
+                    "INSERT INTO purchase_details (purchase_id, medicine_name, quantity, MRP, item_total, expiry_date) VALUES (%s, %s, %s, %s, %s, %s)",
+                    (purchase_id, row['medicine_name'], row['quantity'], row['mrp'], item_total, row['expiry_date'])
+                )
+
+            conn.commit()
+            cur.close()
+            conn.close()
+
+        os.remove(filename)  # Clean up the uploaded file
+        return jsonify({"message": "CSV data uploaded and processed successfully"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # Update MRP Route
 @purchase_bp.route('/update_purchase_detail_data/<int:id>', methods=['PUT'])
