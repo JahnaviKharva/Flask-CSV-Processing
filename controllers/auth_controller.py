@@ -72,6 +72,15 @@ def login():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Route: User Logout
+@auth_bp.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    response = jsonify({"message": "Successfully logged out"})
+    unset_jwt_cookies(response)  # Invalidate the JWT token by unsetting cookies
+    return response
+
+
 # Route: Protected Example
 @auth_bp.route('/protected', methods=['GET'])
 @jwt_required()
