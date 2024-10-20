@@ -68,7 +68,7 @@ Signup
 
 URL: https://web-production-5d75.up.railway.app/signup
 Method: POST
-Body:
+Body:Raw-> JSON
 {
   "username": "testuser",
   "password": "testpassword"
