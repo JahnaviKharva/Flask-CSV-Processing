@@ -34,7 +34,7 @@ try:
     );
     """
 
-    # SQL commands to create the tables
+    # SQL command to create the 'purchase' table
     create_purchase_table = """
     CREATE TABLE IF NOT EXISTS purchase (
         id SERIAL PRIMARY KEY,
@@ -44,6 +44,7 @@ try:
     );
     """
 
+    # SQL command to create the 'purchase_details' table
     create_purchase_details_table = """
     CREATE TABLE IF NOT EXISTS purchase_details (
         id SERIAL PRIMARY KEY,
@@ -56,17 +57,34 @@ try:
     );
     """
 
-    # Execute the SQL commands
+    # Execute the SQL commands to create tables
     cur.execute(create_users_table)
     cur.execute(create_purchase_table)
     cur.execute(create_purchase_details_table)
+
+    # Ensure the unique constraint on 'bill_no'
+    ensure_unique_constraint = """
+    DO $$
+    BEGIN
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_constraint 
+            WHERE conname = 'unique_bill_no'
+        ) THEN
+            ALTER TABLE purchase
+            ADD CONSTRAINT unique_bill_no UNIQUE (bill_no);
+        END IF;
+    END $$;
+    """
+
+    # Execute the SQL command to add the unique constraint
+    cur.execute(ensure_unique_constraint)
 
     # Commit the changes and close the connection
     conn.commit()
     cur.close()
     conn.close()
 
-    print("Tables created successfully.")
+    print("Tables created successfully and unique constraint ensured on 'bill_no'.")
 
 except Exception as e:
     print(f"Error: {e}")
