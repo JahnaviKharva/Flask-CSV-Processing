@@ -59,6 +59,7 @@ quantity: Quantity purchased
 MRP: Maximum Retail Price
 item_total: Total amount for the item
 expiry_date: Expiry date of the medicine
+
 API Endpoints
 The following endpoints are available for testing on the deployed URL: web-production-5d75.up.railway.app
 
@@ -134,6 +135,12 @@ URL: https://web-production-5d75.up.railway.app/create_purchase_csv
 Method: GET
 Description: Creates a CSV file from data in the purchase and purchase_details tables and stores it locally on the server.
 PostgreSQL Database Setup
+
+9. get_all_data
+URL: https://web-production-5d75.up.railway.app/get_all_data
+Method: GET
+Headers:
+Authorization: Bearer <your_jwt_token>
 
 Using setup_database.py
 Run the script to automatically create tables:
