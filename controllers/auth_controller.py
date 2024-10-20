@@ -5,6 +5,36 @@ from models.database import get_db_connection
 
 auth_bp = Blueprint('auth_bp', __name__)
 
+# Route: Get All Data from Tables
+@auth_bp.route('/get_all_data', methods=['GET'])
+@jwt_required()
+def get_all_data():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Fetch data from 'purchase' table
+        cur.execute("SELECT * FROM purchase")
+        purchase_data = cur.fetchall()
+
+        # Fetch data from 'purchase_details' table
+        cur.execute("SELECT * FROM purchase_details")
+        purchase_details_data = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        # Structure the response
+        response = {
+            "purchase": purchase_data,
+            "purchase_details": purchase_details_data
+        }
+
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Route: User Signup
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
