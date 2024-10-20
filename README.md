@@ -106,7 +106,12 @@ The file must have a .csv extension (comma delimited).
 It processes the data and inserts it into the purchase and purchase_details tables.
 The item_total and bill_total are automatically calculated based on mrp * quantity and the sum of item_total values, respectively.
 
-5. Fetch Purchase Data
+Add the Authorization header:
+Key: Authorization
+Value: Bearer <your_access_token>
+Click the Send button to test.
+
+6. Fetch Purchase Data
 
 URL: https://web-production-5d75.up.railway.app/get_purchase_data/<bill_no>
 Method: GET
