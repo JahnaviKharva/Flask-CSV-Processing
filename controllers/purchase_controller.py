@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, Response
+import os
 from services.purchase_service import (
     validate_purchase_data,
     insert_purchase_data,
