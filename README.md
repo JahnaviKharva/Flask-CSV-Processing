@@ -26,22 +26,36 @@ This project is a Flask-based backend application designed to:
 ### Local Installation
 ### There is no need for clonning because i have a deployed urls, so, you can check them directly on postman
 1. **Clone the repository:**
-   ```bash
+   ##cmd
    git clone https://github.com/JahnaviKharva/Flask-CSV-Processing
    cd Flask-CSV-Processing
 
-Set up a virtual environment:
+2. Set up a virtual environment:
 python -m venv venv
 venv\Scripts\activate  # For Windows
 source venv/bin/activate  # For Mac/Linux
 
-Install the required packages:
+3. Install the required packages:
 pip install -r requirements.txt
 
-Set up the database:
+4. Set up the database:
 
-Run the following command to create tables in the database:
-python setup_database.py #databse is already setup on the railway postgresql, so no need to run it. this is just for the understanding.
+#databse is already setup on the railway postgresql, so no need to run it. this is just for the understanding.
+#Run the following command to create tables in the database:
+python setup_database.py 
+
+#if you want to connect the database through pgadmin
+
+Open pgAdmin and right-click on Servers.
+Select Create > Server.
+In the General tab, enter a name for the connection, like Railway Database.
+In the Connection tab:
+Host name/address: autorack.proxy.rlwy.net
+Port: 36111
+Maintenance database: railway
+Username: postgres
+Password: hyToKiwEBbymQAjdoNMCAJNkQxCZppbk
+Click Save to create the connection.
 
 Database Structure
 The database consists of two tables:
@@ -149,9 +163,7 @@ Method: GET
 Headers:
 Authorization: Bearer <your_jwt_token>
 
-Using setup_database.py
-Run the script to automatically create tables:
-python setup_database.py
+
 
 Deployment
 The app is deployed on Railway and is accessible at web-production-5d75.up.railway.app. #you need to check the url endpoints on postman
